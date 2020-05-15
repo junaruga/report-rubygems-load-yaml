@@ -27,7 +27,7 @@ jobs:
       env:
         - BASE_IMAGE=fedora:32
       <<: *test_in_container
-    - name: "Fedora 32 Ruby 2.6"
+    - name: "Fedora 31 Ruby 2.6"
       env:
         - BASE_IMAGE=fedora:31
       <<: *test_in_container
