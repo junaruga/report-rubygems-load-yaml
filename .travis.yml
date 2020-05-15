@@ -3,7 +3,7 @@ language: minimal
 env:
   global:
     - BASE_IMAGE=fedora:32
-    - TEST_CMD="./test.sh"
+    - TEST_CMD="ruby ./test.rb"
 
 .com.github.junaruga.report-rubygems-load-yaml.definitions:
   - &test_in_container
