@@ -1,9 +1,12 @@
 ARG BASE_IMAGE=fedora:32
 FROM ${BASE_IMAGE}
 
+ARG PATCH_SH
+
 RUN yum -y upgrade && \
   yum -y install \
   gcc \
+  patch \
   redhat-rpm-config \
   ruby \
   ruby-devel
@@ -13,5 +16,7 @@ RUN useradd -m tester
 WORKDIR /work
 COPY . .
 RUN chown -R tester:tester /work
+
+RUN if [ "${PATCH_SH}" != "" ]; then "${PATCH_SH}"; fi
 
 USER tester

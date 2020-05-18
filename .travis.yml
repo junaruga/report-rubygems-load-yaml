@@ -3,6 +3,7 @@ language: minimal
 env:
   global:
     - BASE_IMAGE=fedora:32
+    - PATCH_SH=""
     - TEST_CMD="./test.sh"
 
 .com.github.junaruga.report-rubygems-load-yaml.definitions:
@@ -12,6 +13,7 @@ env:
         travis_retry docker build --rm -t test/rubygems \
           -f ci/Dockerfile-fedora \
           --build-arg BASE_IMAGE=${BASE_IMAGE} \
+          --build-arg PATCH_SH=${PATCH_SH} \
           .
     script:
       - |
@@ -23,6 +25,11 @@ jobs:
       env:
         - BASE_IMAGE=fedora:rawhide
       <<: *test_in_container
+    - name: "Fedora rawhide Ruby 2.7 with patch"
+      env:
+        - BASE_IMAGE=fedora:rawhide
+        - PATCH_SH="./patch_rawhide.sh"
+      <<: *test_in_container
     - name: "Fedora 32 Ruby 2.7"
       env:
         - BASE_IMAGE=fedora:32
@@ -33,6 +40,7 @@ jobs:
       <<: *test_in_container
   allow_failures:
     - name: "Fedora rawhide Ruby 2.7"
+    - name: "Fedora rawhide Ruby 2.7 with patch"
     - name: "Fedora 32 Ruby 2.7"
   fast_finish: true
 branches:
