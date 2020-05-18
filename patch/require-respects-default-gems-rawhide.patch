@@ -1,0 +1,44 @@
+diff --git /usr/share/rubygems/rubygems.rb.orig usr/share/rubygems/rubygems.rb
+index 2b72614087..fc35e72ca1 100644
+--- /usr/share/rubygems/rubygems.rb.orig
++++ /usr/share/rubygems/rubygems.rb
+@@ -1294,6 +1294,8 @@ def register_default_spec(spec)
+           next unless $~
+         end
+ 
++        spec.activate if already_loaded?(file)
++
+         @path_to_default_spec_map[file] = spec
+         @path_to_default_spec_map[file.sub(suffix_regexp, "")] = spec
+       end
+@@ -1359,6 +1361,18 @@ def clear_default_specs
+ 
+     attr_reader :pre_uninstall_hooks
+ 
++    private
++
++    def already_loaded?(file)
++      default_gem_load_paths.find do |load_path_entry|
++        $LOADED_FEATURES.include?("#{load_path_entry}/#{file}")
++      end
++    end
++
++    def default_gem_load_paths
++      @default_gem_load_paths ||= $LOAD_PATH[load_path_insert_index..-1]
++    end
++
+   end
+ 
+   ##
+diff --git /usr/share/rubygems/rubygems/test_case.rb.orig /usr/share/rubygems/rubygems/test_case.rb
+index 7bcd9da4d7..bc4964f675 100644
+--- /usr/share/rubygems/rubygems/test_case.rb.orig
++++ /usr/share/rubygems/rubygems/test_case.rb
+@@ -784,6 +784,7 @@ def new_default_spec(name, version, deps = nil, *files)
+ 
+     lib_dir = File.join(@tempdir, "default_gems", "lib")
+     lib_dir.instance_variable_set(:@gem_prelude_index, lib_dir)
++    Gem.instance_variable_set(:@default_gem_load_paths, [*Gem.instance_variable_get(:@default_gem_load_paths), lib_dir])
+     $LOAD_PATH.unshift(lib_dir)
+     files.each do |file|
+       rb_path = File.join(lib_dir, file)
